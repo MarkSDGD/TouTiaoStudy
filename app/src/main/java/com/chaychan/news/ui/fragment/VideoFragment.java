@@ -9,11 +9,10 @@ import android.widget.ImageView;
 import com.chaychan.news.R;
 import com.chaychan.news.constants.Constant;
 import com.chaychan.news.model.entity.Channel;
-import com.chaychan.news.ui.adapter.ChannelAdapter;
+import com.chaychan.news.ui.adapter.ChannelPagerAdapter;
 import com.chaychan.news.ui.base.BaseFragment;
 import com.chaychan.news.ui.base.BasePresenter;
 import com.chaychan.news.utils.UIUtils;
-import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,28 +36,32 @@ public class VideoFragment extends BaseFragment {
     ImageView mIvOperation;
 
     @Bind(R.id.vp_content)
-    ViewPager mVpContent;
+    ViewPager mViewPager;
 
     private List<Channel> mChannelList = new ArrayList<>();
     private List<NewsListFragment> mFrgamentList = new ArrayList<>();
 
     @Override
     protected BasePresenter createPresenter() {
+        //KLog.i("MARK","VideoFragment createPresenter");
         return null;
     }
 
     @Override
     protected int provideContentViewId() {
+        //KLog.i("MARK","VideoFragment provideContentViewId");
         return R.layout.fragment_video;
     }
 
     @Override
     public void initView(View rootView) {
+        //KLog.i("MARK","VideoFragment initView");
         mIvOperation.setImageResource(R.mipmap.search_channel);
     }
 
     @Override
     public void initData() {
+        //KLog.i("MARK","VideoFragment initData");
         initChannelData();
         initChannelFragments();
     }
@@ -86,12 +89,13 @@ public class VideoFragment extends BaseFragment {
 
     @Override
     public void initListener() {
-        ChannelAdapter channelAdapter = new ChannelAdapter(mFrgamentList, mChannelList,getChildFragmentManager());
-        mVpContent.setAdapter(channelAdapter);
-        mVpContent.setOffscreenPageLimit(mFrgamentList.size());
+        //KLog.i("MARK","VideoFragment initListener");
+        ChannelPagerAdapter channelPagerAdapter = new ChannelPagerAdapter(mFrgamentList, mChannelList,getChildFragmentManager());
+        mViewPager.setAdapter(channelPagerAdapter);
+        mViewPager.setOffscreenPageLimit(mFrgamentList.size());
 
         mTabChannel.setTabPaddingLeftAndRight(UIUtils.dip2Px(10), UIUtils.dip2Px(10));
-        mTabChannel.setupWithViewPager(mVpContent);
+        mTabChannel.setupWithViewPager(mViewPager);
         mTabChannel.post(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +107,7 @@ public class VideoFragment extends BaseFragment {
         //隐藏指示器
         mTabChannel.setSelectedTabIndicatorHeight(0);
 
-        mVpContent.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -123,13 +127,13 @@ public class VideoFragment extends BaseFragment {
     }
 
     public String getCurrentChannelCode(){
-        int currentItem = mVpContent.getCurrentItem();
+        int currentItem = mViewPager.getCurrentItem();
         return mChannelList.get(currentItem).channelCode;
     }
 
     @Override
     public void loadData() {
-        KLog.i("loadData");
+        //KLog.i("MARK","VideoFragment loadData");
     }
 
 }

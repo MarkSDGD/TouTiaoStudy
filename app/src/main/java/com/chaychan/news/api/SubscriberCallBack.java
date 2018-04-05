@@ -6,14 +6,14 @@ import com.chaychan.news.model.response.ResultResponse;
 import com.chaychan.news.utils.UIUtils;
 import com.socks.library.KLog;
 
-import rx.Subscriber;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * @author ChayChan
  * @description: 抽取CallBack
  * @date 2017/6/18  21:37
  */
-public abstract class SubscriberCallBack<T> extends Subscriber<ResultResponse<T>> {
+public abstract class SubscriberCallBack<T> extends DisposableObserver<ResultResponse<T>> {
 
     @Override
     public void onNext(ResultResponse response) {
@@ -28,7 +28,7 @@ public abstract class SubscriberCallBack<T> extends Subscriber<ResultResponse<T>
     }
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
 
     }
 

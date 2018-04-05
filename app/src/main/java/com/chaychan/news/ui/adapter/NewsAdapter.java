@@ -14,7 +14,6 @@ import com.chaychan.news.utils.GlideUtils;
 import com.chaychan.news.utils.ListUtils;
 import com.chaychan.news.utils.TimeUtils;
 import com.chaychan.news.utils.UIUtils;
-import com.chaychan.news.utils.VideoPathDecoder;
 import com.socks.library.KLog;
 
 import java.util.List;
@@ -55,6 +54,7 @@ public class NewsAdapter extends BaseQuickAdapter<News, BaseViewHolder> {
      * 视频列表类型
      */
     private static final int VIDEO_LIST_NEWS = 500;
+    private String VideoTestUrl="http://flv2.bn.netease.com/videolib3/1604/28/fVobI0704/SD/fVobI0704-mobile.mp4";
 
 
     private Context mContext;
@@ -220,7 +220,9 @@ public class NewsAdapter extends BaseQuickAdapter<News, BaseViewHolder> {
         helper.setText(R.id.tv_title, news.title);//设置标题
 
         String format = UIUtils.getString(R.string.video_play_count);
-        int watchCount = news.video_detail_info.video_watch_count;
+        //int watchCount = news.video_detail_info.video_watch_count;
+        int watchCount = 567000;
+
         String countUnit = "";
         if (watchCount> 10000){
             watchCount = watchCount / 10000;
@@ -238,7 +240,9 @@ public class NewsAdapter extends BaseQuickAdapter<News, BaseViewHolder> {
 
 
         JCVideoPlayerStandard videoPlayer = helper.getView(R.id.video_player);
-        GlideUtils.load(mContext, news.video_detail_info.detail_video_large_image.url, videoPlayer.thumbImageView, R.color.divider);//设置缩略图
+       // GlideUtils.load(mContext, news.video_detail_info.detail_video_large_image.url, videoPlayer.thumbImageView, R.color.divider);//设置缩略图
+        String url="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1517293881959&di=4db95e5a6f89b30856c978391fee8642&imgtype=0&src=http%3A%2F%2Fwww.telnote.cn%2Fqqtouxiang%2Fimages%2F201112%2F20111216220846638.jpg";
+        GlideUtils.load(mContext, url, videoPlayer.thumbImageView, R.color.divider);//设置缩略图
 
         videoPlayer.setAllControlsVisible(GONE, GONE, VISIBLE, GONE, VISIBLE, VISIBLE, GONE);
         videoPlayer.tinyBackImageView.setVisibility(GONE);
@@ -252,16 +256,17 @@ public class NewsAdapter extends BaseQuickAdapter<News, BaseViewHolder> {
                 //点击播放
                 helper.setVisible(R.id.ll_duration, false);//隐藏时长
                 helper.setVisible(R.id.ll_title,false);//隐藏标题栏
-//
-                VideoPathDecoder decoder = new VideoPathDecoder() {
+                KLog.i("onVideoClickToStart!");
+/*                VideoPathDecoder decoder = new VideoPathDecoder() {
                     @Override
                     public void onSuccess(String url) {
+
                         KLog.i("Video url:" + url);
                         UIUtils.postTaskSafely(new Runnable() {
                             @Override
                             public void run() {
-                                videoPlayer.setUp(url, JCVideoPlayer.SCREEN_LAYOUT_LIST,news.title);
-                                videoPlayer.seekToInAdvance = news.video_detail_info.progress;
+                                videoPlayer.setUp(VideoTestUrl, JCVideoPlayer.SCREEN_LAYOUT_LIST,news.title);
+                            //    videoPlayer.seekToInAdvance = news.video_detail_info.progress;
                                 videoPlayer.startVideo();
                             }
                         });
@@ -271,7 +276,18 @@ public class NewsAdapter extends BaseQuickAdapter<News, BaseViewHolder> {
                     public void onDecodeError() {
                     }
                 };
-                decoder.decodePath(news.url);
+                decoder.decodePath(news.url);*/
+
+                KLog.i("Video url:" + VideoTestUrl);
+                UIUtils.postTaskSafely(new Runnable() {
+                    @Override
+                    public void run() {
+                        videoPlayer.setUp(VideoTestUrl, JCVideoPlayer.SCREEN_LAYOUT_LIST,news.title);
+                     //   videoPlayer.seekToInAdvance = news.video_detail_info.progress;
+                        videoPlayer.startVideo();
+                    }
+                });
+
             }
         });
     }

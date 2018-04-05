@@ -5,7 +5,6 @@ import android.view.View;
 import com.chaychan.news.R;
 import com.chaychan.news.ui.base.BaseFragment;
 import com.chaychan.news.ui.base.BasePresenter;
-import com.socks.library.KLog;
 
 /**
  * @author ChayChan
@@ -17,31 +16,33 @@ public class MicroFragment extends BaseFragment{
 
     @Override
     protected BasePresenter createPresenter() {
+        //KLog.i("createPresenter");
         return null;
     }
 
     @Override
     protected int provideContentViewId() {
+        //KLog.i("provideContentViewId");
         return  R.layout.fragment_micro;
     }
 
     @Override
     public void initView(View rootView) {
-        KLog.i("initView");
+        //KLog.i("initView");
     }
 
     @Override
     public void initData() {
-        KLog.i("initData");
+        //KLog.i("initData");
     }
 
     @Override
     public void initListener() {
-        KLog.i("initListener");
+        //KLog.i("initListener");
     }
 
     @Override
     public void loadData() {
-        KLog.i("loadData");
+        //KLog.i("loadData");
     }
 }

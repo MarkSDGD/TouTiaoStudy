@@ -12,7 +12,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * @author ChayChan
@@ -25,7 +25,7 @@ public interface ApiService {
     String GET_ARTICLE_LIST = "api/news/feed/v62/?refer=1&count=20&loc_mode=4&device_id=34960436458&iid=13136511752";
     String GET_COMMENT_LIST = "article/v2/tab_comments/";
     //http://is.snssdk.com
-    //http://is.snssdk.com/api/news/feed/v54/?refer=1&count=20&min_behot_time=1498722625&last_refresh_sub_entrance_interval=1498724693&loc_mode=4&tt_from=pull（tab_tip） 新闻列表
+    //http://is.snssdk.com/api/news/feed/v54/?refer=1&count=20&category=news_hot&min_behot_time=1498722625&last_refresh_sub_entrance_interval=1498724693&loc_mode=4&device_id=34960436458&iid=13136511752  新闻列表
     //http://is.snssdk.com/article/v2/tab_comments/?group_id=6436886053704958466&item_id=6436886053704958466&offset=30&count=20 评论
     //http://is.snssdk.com/2/article/information/v21/ 详情
 

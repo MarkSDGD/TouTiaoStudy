@@ -45,6 +45,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends LazyLoadFrag
             if (mStateView != null){
                 mStateView.setLoadingResource(R.layout.page_loading);
                 mStateView.setRetryResource(R.layout.page_net_error);
+
             }
 
             initView(rootView);
@@ -75,6 +76,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends LazyLoadFrag
      * @param rootView
      */
     public void initView(View rootView) {
+
     }
 
     /**
@@ -95,6 +97,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends LazyLoadFrag
     @Override
     protected void onFragmentFirstVisible() {
         //当第一次可见的时候，加载数据
+
         loadData();
     }
 

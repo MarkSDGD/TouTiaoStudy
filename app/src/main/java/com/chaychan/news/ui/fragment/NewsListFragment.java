@@ -1,6 +1,7 @@
 package com.chaychan.news.ui.fragment;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,11 +16,12 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaychan.library.BottomBarItem;
 import com.chaychan.news.R;
 import com.chaychan.news.constants.Constant;
+import com.chaychan.news.model.entity.Channel;
 import com.chaychan.news.model.entity.News;
 import com.chaychan.news.model.entity.NewsRecord;
+import com.chaychan.news.model.event.DetailCloseEvent;
 import com.chaychan.news.model.event.TabRefreshCompletedEvent;
 import com.chaychan.news.model.event.TabRefreshEvent;
-import com.chaychan.news.model.event.DetailCloseEvent;
 import com.chaychan.news.ui.activity.NewsDetailBaseActivity;
 import com.chaychan.news.ui.activity.NewsDetailDetailActivity;
 import com.chaychan.news.ui.activity.VideoDetailActivity;
@@ -37,7 +39,6 @@ import com.chaychan.uikit.powerfulrecyclerview.PowerfulRecyclerView;
 import com.chaychan.uikit.refreshlayout.BGANormalRefreshViewHolder;
 import com.chaychan.uikit.refreshlayout.BGARefreshLayout;
 import com.google.gson.Gson;
-import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -71,7 +72,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
     BGARefreshLayout mRefreshLayout;
 
     @Bind(R.id.fl_content)
-    FrameLayout mFlContent;
+    FrameLayout mFrameLayout;
 
     @Bind(R.id.rv_news)
     PowerfulRecyclerView mRvNews;
@@ -100,24 +101,36 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
     //用于标记是否是首页的底部刷新，如果是加载成功后发送完成的事件
     private boolean isHomeTabRefresh;
 
+
+    public static NewsListFragment newInstance(Channel channel) {
+        NewsListFragment newsFragment = new NewsListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Constant.CHANNEL_CODE, channel.channelCode);
+        bundle.putBoolean(Constant.IS_VIDEO_LIST, channel.channelCode.equals("video"));//是否是视频列表页面,根据判断频道号是否是视频
+        newsFragment.setArguments(bundle);
+        return newsFragment;
+    }
     @Override
     protected NewsListPresenter createPresenter() {
+        //KLog.i("MARK","NewsListFragment createPresenter");
         return new NewsListPresenter(this);
     }
 
     @Override
     protected int provideContentViewId() {
+        //KLog.i("MARK","NewsListFragment provideContentViewId");
         return R.layout.fragment_news_list;
     }
 
 
     @Override
     public View getStateViewRoot() {
-        return mFlContent;
+        return mFrameLayout;
     }
 
     @Override
     public void initView(View rootView) {
+        //KLog.i("MARK","NewsListFragment initView");
         mRefreshLayout.setDelegate(this);
         mRvNews.setLayoutManager(new GridLayoutManager(mActivity, 1));
         // 设置下拉刷新和上拉加载更多的风格     参数1：应用程序上下文，参数2：是否具有上拉加载更多功能
@@ -136,6 +149,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     public void initData() {
+        //KLog.i("MARK","NewsListFragment initData");
         mChannelCode = getArguments().getString(Constant.CHANNEL_CODE);
         isVideoList = getArguments().getBoolean(Constant.IS_VIDEO_LIST, false);
 
@@ -145,6 +159,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     public void initListener() {
+        //KLog.i("MARK","NewsListFragment initListener");
         mNewsAdapter = new NewsAdapter(mActivity, mChannelCode, isVideoList, mNewsList);
         mRvNews.setAdapter(mNewsAdapter);
 
@@ -198,7 +213,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
         if (isVideoList) {
             //如果是视频列表，监听滚动
-            mRvNews.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            mRvNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     if (JCVideoPlayerManager.getCurrentJcvd() != null) {
@@ -223,6 +238,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     protected void loadData() {
+        //KLog.i("MARK","NewsListFragment loadData");
         mStateView.showLoading();
 
         //查找该频道的最后一组记录
@@ -249,6 +265,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     public void onGetNewsListSuccess(List<News> newList, String tipInfo) {
+        //KLog.i("MARK","NewsListFragment onGetNewsListSuccess");
         mRefreshLayout.endRefreshing();// 加载完毕后在 UI 线程结束下拉刷新
         if (isHomeTabRefresh) {
             postRefreshCompletedEvent();//发送加载完成的事件
@@ -290,6 +307,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
      * 处理置顶新闻和广告重复
      */
     private void dealRepeat(List<News> newList) {
+        //KLog.i("MARK","NewsListFragment dealRepeat");
         if (isRecommendChannel && !ListUtils.isEmpty(mNewsList)) {
             //如果是推荐频道并且数据列表已经有数据,处理置顶新闻或广告重复的问题
             mNewsList.remove(0);//由于第一条新闻是重复的，移除原有的第一条
@@ -297,7 +315,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
             if (newList.size() >= 4) {
                 News fourthNews = newList.get(3);
                 //如果列表第4个和原有列表第4个新闻都是广告，并且id一致，移除
-                if (fourthNews.tag.equals(Constant.ARTICLE_GENRE_AD)) {
+                if (Constant.ARTICLE_GENRE_AD.equals(fourthNews.tag)) {
                     newList.remove(fourthNews);
                 }
             }
@@ -307,6 +325,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     public void onError() {
+        //KLog.i("MARK","NewsListFragment onError");
         mTipView.show();//弹出提示
 
         if (ListUtils.isEmpty(mNewsList)) {
@@ -322,6 +341,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
     }
 
     private void postRefreshCompletedEvent() {
+        //KLog.i("MARK","NewsListFragment postRefreshCompletedEvent");
         if (isClickTabRefreshing) {
             //如果是点击底部刷新获取到数据的,发送加载完成的事件
             EventBus.getDefault().post(new TabRefreshCompletedEvent());
@@ -331,6 +351,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        //KLog.i("MARK","NewsListFragment onBGARefreshLayoutBeginRefreshing");
         if (!NetWorkUtils.isNetworkAvailable(mActivity)) {
             //网络不可用弹出提示
             mTipView.show();
@@ -345,11 +366,13 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         // BGARefresh的加载更多，不处理,使用到的是BaseRecyclerViewAdapterHelper的加载更多
+        //KLog.i("MARK","NewsListFragment onBGARefreshLayoutBeginLoadingMore");
         return false;
     }
 
     @Override
     public void onLoadMoreRequested() {
+        //KLog.i("MARK","NewsListFragment onLoadMoreRequested");
         // BaseRecyclerViewAdapterHelper的加载更多
         if (mNewsRecord.getPage() == 0 || mNewsRecord.getPage() == 1) {
             //如果记录的页数为0(即是创建的空记录)，或者页数为1(即已经是第一条记录了)
@@ -396,6 +419,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefreshEvent(TabRefreshEvent event) {
+        //KLog.i("MARK","NewsListFragment onRefreshEvent");
         if (event.getChannelCode().equals(mChannelCode) && mRefreshLayout.getCurrentRefreshStatus() != BGARefreshLayout.RefreshStatus.REFRESHING) {
             //如果和当前的频道码一致并且不是刷新中,进行下拉刷新
             if (!NetWorkUtils.isNetworkAvailable(mActivity)) {
@@ -437,6 +461,7 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDetailCloseEvent(DetailCloseEvent event) {
+        //KLog.i("MARK","NewsListFragment onDetailCloseEvent");
         if (!event.getChannelCode().equals(mChannelCode)) {
             //如果频道不一致，不用处理
             return;
@@ -462,19 +487,21 @@ public class NewsListFragment extends BaseFragment<NewsListPresenter> implements
     @Override
     public void onStart() {
         super.onStart();
+        //KLog.i("MARK","NewsListFragment onStart");
         registerEventBus(NewsListFragment.this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        //KLog.i("MARK","NewsListFragment onStop");
         unregisterEventBus(NewsListFragment.this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        KLog.e("onDestroy" + mChannelCode);
+        //KLog.i("MARK","NewsListFragment onDestroy" + mChannelCode);
     }
 
 }

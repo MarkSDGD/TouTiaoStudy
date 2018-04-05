@@ -38,6 +38,8 @@ public class MainActivity extends BaseActivity {
 
     private List<BaseFragment> mFragments;
     private MainTabAdapter mTabAdapter;
+    private int CurrentTabPosition=0;
+    private String CurrentChannelCode="";
 
     private int[] mStatusColors = new int[]{
             R.color.status_color_red,
@@ -123,6 +125,8 @@ public class MainActivity extends BaseActivity {
         event.setHomeTab(position == 0);
         EventBus.getDefault().post(event);//发送下拉刷新事件
     }
+
+
 
     /**
      * 停止首页页签的旋转动画

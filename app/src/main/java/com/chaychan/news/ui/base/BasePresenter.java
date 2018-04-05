@@ -3,17 +3,18 @@ package com.chaychan.news.ui.base;
 import com.chaychan.news.api.ApiRetrofit;
 import com.chaychan.news.api.ApiService;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+
 
 public abstract class BasePresenter<V> {
 
     protected ApiService mApiService = ApiRetrofit.getInstance().getApiService();
     protected V mView;
-    private CompositeSubscription mCompositeSubscription;
+    private CompositeDisposable mCompositeDisposable;
 
     public BasePresenter(V view) {
         attachView(view);
@@ -29,20 +30,21 @@ public abstract class BasePresenter<V> {
     }
 
 
-    public void addSubscription(Observable observable, Subscriber subscriber) {
-        if (mCompositeSubscription == null) {
-            mCompositeSubscription = new CompositeSubscription();
+    public void addSubscription(Observable observable, DisposableObserver subscriber) {
+        if (mCompositeDisposable == null) {
+            mCompositeDisposable = new CompositeDisposable();
         }
-        mCompositeSubscription.add(observable
+        observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber));
+                .subscribe(subscriber);
+        mCompositeDisposable.add(subscriber);
     }
 
     //RXjava取消注册，以避免内存泄露
     public void onUnsubscribe() {
-        if (mCompositeSubscription != null && mCompositeSubscription.hasSubscriptions()) {
-            mCompositeSubscription.unsubscribe();
+        if (mCompositeDisposable != null && ! mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.dispose();
         }
     }
 }

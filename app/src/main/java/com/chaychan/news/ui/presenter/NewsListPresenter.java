@@ -13,7 +13,7 @@ import com.socks.library.KLog;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Subscriber;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * @author ChayChan
@@ -37,9 +37,9 @@ public class NewsListPresenter extends BasePresenter<lNewsListView> {
             lastTime = System.currentTimeMillis() / 1000;
         }
 
-        addSubscription(mApiService.getNewsList(channelCode,lastTime,System.currentTimeMillis()/1000), new Subscriber<NewsResponse>() {
+        addSubscription(mApiService.getNewsList(channelCode,lastTime,System.currentTimeMillis()/1000), new DisposableObserver<NewsResponse>() {
             @Override
-            public void onCompleted() {
+            public void onComplete() {
 
             }
 

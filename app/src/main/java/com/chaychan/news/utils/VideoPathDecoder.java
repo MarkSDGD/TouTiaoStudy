@@ -11,9 +11,9 @@ import com.socks.library.KLog;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2017/2/9 0009.
@@ -68,9 +68,9 @@ public abstract class VideoPathDecoder {
     private void sendRequest(String srcUrl,String r,String s) {
         ApiRetrofit.getInstance().getApiService().getVideoPath(srcUrl,r,s) .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<VideoPathResponse>() {
+                .subscribe(new DisposableObserver<VideoPathResponse>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
 
                     }
 

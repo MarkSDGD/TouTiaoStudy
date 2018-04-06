@@ -16,7 +16,7 @@
         android:orientation="vertical"
         >
 
-        <com.chaychan.uikit.powerfulrecyclerview.PowerfulRecyclerView
+        <com.mark.uikit.powerfulrecyclerview.PowerfulRecyclerView
             android:id="@+id/rv_comment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
